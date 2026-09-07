@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Horton Bebras 挑戰賽</title>
+  <style>
+    :root{--bg:#f7f8fb;--card:#fff;--text:#18202b;--muted:#64748b;--line:#e5e7eb;--accent:#0f766e;--accent2:#ccfbf1;--danger:#b91c1c;--ok:#166534}
+    *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;background:var(--bg);color:var(--text)}
+    header{position:sticky;top:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+    .wrap{max-width:900px;margin:auto;padding:18px}.top{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    h1{font-size:24px;margin:0}.sub{color:var(--muted);font-size:14px}.timer{font-size:22px;font-weight:800;padding:10px 14px;border-radius:14px;background:var(--accent2);color:#115e59}
+    .hero,.card,.result{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;margin:18px 0;box-shadow:0 8px 24px rgba(15,23,42,.04)}
+    .hero h2{margin-top:0}.meta{display:flex;gap:10px;flex-wrap:wrap}.pill{background:#f1f5f9;padding:6px 10px;border-radius:999px;font-size:13px}
+    .qnum{font-size:13px;color:var(--muted);font-weight:700}.qtitle{font-size:19px;font-weight:800;margin:8px 0 14px}.story{line-height:1.7;white-space:pre-line}
+    .choices{display:grid;gap:10px;margin-top:14px}.choice{border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;background:#fff}.choice:hover{border-color:#94a3b8}.choice input{margin-top:3px}
+    .section-label{margin-top:28px;font-size:18px;font-weight:800;color:#334155}
+    .actions{display:flex;justify-content:center;gap:12px;margin:28px 0 50px;flex-wrap:wrap}button{border:0;border-radius:14px;padding:13px 20px;font-size:16px;font-weight:800;cursor:pointer}.primary{background:var(--accent);color:white}.secondary{background:#e2e8f0;color:#0f172a}
+    .hidden{display:none}.score{font-size:40px;font-weight:900}.good{color:var(--ok)}.bad{color:var(--danger)}.explain{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);line-height:1.65}.answerline{font-weight:800}.wrong-card{border-left:5px solid #ef4444}.right-card{border-left:5px solid #22c55e}
+    footer{color:var(--muted);text-align:center;padding:0 20px 34px;font-size:13px}
+    @media(max-width:640px){.wrap{padding:12px}.hero,.card,.result{padding:16px;border-radius:14px}h1{font-size:20px}.timer{font-size:18px}.qtitle{font-size:17px}}
+  </style>
+</head>
+<body>
+<header><div class="wrap top"><div><h1>Horton Bebras 挑戰賽</h1><div class="sub">五、六年級模擬題｜Week 1</div></div><div id="timer" class="timer">36:00</div></div></header>
+<main class="wrap">
+  <section class="hero" id="intro">
+    <h2>準備好了嗎？</h2>
+    <p>共 12 題，建議 36 分鐘內完成。題目分成簡單、中等、困難，重點是運算思維，不需要會寫程式才能作答。</p>
+    <div class="meta"><span class="pill">12 題</span><span class="pill">36 分鐘</span><span class="pill">Bebras 風格</span><span class="pill">交卷後看解析</span></div>
+  </section>
+  <form id="quiz"></form>
+  <div class="actions"><button class="primary" id="submitBtn" type="button">交卷看成績</button><button class="secondary" id="resetBtn" type="button">重新作答</button></div>
+  <section id="result" class="result hidden"></section>
+</main>
+<footer>這是依 Bebras 運算思維風格自製的練習題，非官方題庫。</footer>
+<script>
+const questions = [
+{level:'簡單',title:'機器人走路',text:'機器人一開始面向北方。\n\n它依序執行：前進 2 格 → 右轉 → 前進 1 格 → 右轉 → 前進 2 格。\n\n最後它面向哪個方向？',choices:['北','東','南','西'],answer:2,explain:'面向北 → 右轉變東 → 再右轉變南，所以最後面向南。',skill:'規則模擬／演算法'},
+{level:'簡單',title:'數字機器',text:'規則：偶數 → 除以 2；奇數 → 加 5。\n\n從 6 開始，連續執行 3 次，最後是多少？',choices:['4','8','10','12'],answer:0,explain:'6 → 3 → 8 → 4，所以答案是 4。',skill:'流程追蹤'},
+{level:'簡單',title:'壓縮圖案',text:'圖案 ●●●○○● 用「連續相同符號的數量」壓縮。哪個正確？',choices:['3●2○1●','2●2○2●','3●1○2●','6●'],answer:0,explain:'連續有 3 個●、2 個○、1 個●，所以是 3●2○1●。',skill:'資料表示／壓縮'},
+{level:'簡單',title:'排隊規則',text:'四人 A、B、C、D 排隊。\n規則：A 必須在 B 前面；C 不能排第一；D 必須排最後。\n哪個排列可能成立？',choices:['C → A → B → D','A → C → B → D','B → A → C → D','A → B → D → C'],answer:1,explain:'B 選項同時符合 A 在 B 前、C 不是第一、D 最後。',skill:'限制條件'},
+{level:'中等',title:'網站最短路徑',text:'網站連結：A→B、A→C、B→D、C→E、E→D。\n從 A 到 D 最少要幾步？',choices:['1','2','3','4'],answer:1,explain:'A→B→D，只要 2 步。',skill:'圖論／最短路徑'},
+{level:'中等',title:'神秘規律',text:'數列：2, 3, 5, 8, 13, ?\n下一個數字是多少？',choices:['18','20','21','26'],answer:2,explain:'每一項是前兩項相加：8+13=21。',skill:'模式辨識'},
+{level:'中等',title:'真假訊息',text:'三個盒子：\n紅盒：「寶物在藍盒」\n藍盒：「寶物不在藍盒」\n綠盒：「寶物在紅盒」\n\n已知三句話中只有一句是真的。寶物在哪裡？',choices:['紅盒','藍盒','綠盒','無法判斷'],answer:2,explain:'若在綠盒：紅盒說錯、藍盒說真、綠盒說錯，剛好只有一句真。',skill:'邏輯推理'},
+{level:'中等',title:'程式流程',text:'x = 1\n重複 3 次：\n  x = x × 2\n  x = x + 1\n\n最後 x 是多少？',choices:['7','9','15','17'],answer:2,explain:'1→3→7→15，所以答案是 15。',skill:'迴圈／流程追蹤'},
+{level:'困難',title:'過橋策略',text:'A、B、C、D 過橋時間分別是 1、2、5、10 分鐘。每次最多兩人，必須帶手電筒，兩人同行以較慢者時間計。\n全部過橋最少需要多少分鐘？',choices:['17','18','19','20'],answer:0,explain:'最佳策略：1&2過(2)，1回(1)，5&10過(10)，2回(2)，1&2過(2)，共17。',skill:'最佳化／策略'},
+{level:'困難',title:'訊息編碼',text:'用 2 位元表示四種動作：00=上、01=右、10=下、11=左。\n指令串 00011011 代表哪四個動作？',choices:['上、右、下、左','上、下、右、左','右、上、左、下','上、右、左、下'],answer:0,explain:'切成 00｜01｜10｜11，即上、右、下、左。',skill:'二進位編碼'},
+{level:'困難',title:'工作排程',text:'三個任務 X、Y、Z。\nX 要 2 分鐘，Y 要 3 分鐘，Z 要 1 分鐘。\n規則：Y 必須在 X 完成後才能開始；Z 可以隨時做。只有一台電腦，一次只能做一個任務。\n最短多久能全部完成？',choices:['5 分鐘','6 分鐘','7 分鐘','8 分鐘'],answer:1,explain:'總工作時間本來就是 2+3+1=6 分鐘，而且限制不會增加空等時間，所以最少 6 分鐘。',skill:'排程／依賴關係'},
+{level:'困難',title:'搜尋密碼',text:'密碼是 4 位數，每位只能是 0 或 1。\n已知第一位和第二位不同；第二位和第三位相同；第三位和第四位不同；第一位是 1。\n密碼是？',choices:['1001','1010','1100','0110'],answer:0,explain:'第一位1，所以第二位0；第三位和第二位相同也是0；第四位和第三位不同為1，因此1001。',skill:'限制條件／推理'}
+];
+const quiz=document.getElementById('quiz');
+let lastLevel='';
+questions.forEach((q,i)=>{
+  if(q.level!==lastLevel){const s=document.createElement('div');s.className='section-label';s.textContent=q.level+'題';quiz.appendChild(s);lastLevel=q.level;}
+  const c=document.createElement('section');c.className='card';c.innerHTML=`<div class="qnum">第 ${i+1} 題 · ${q.skill}</div><div class="qtitle">${q.title}</div><div class="story">${q.text}</div><div class="choices">${q.choices.map((ch,j)=>`<label class="choice"><input type="radio" name="q${i}" value="${j}"><span>${String.fromCharCode(65+j)}. ${ch}</span></label>`).join('')}</div>`;quiz.appendChild(c);
+});
+let seconds=36*60;let timerId=setInterval(()=>{seconds--;renderTimer();if(seconds<=0){clearInterval(timerId);submitQuiz(true)}},1000);
+function renderTimer(){const m=Math.floor(seconds/60),s=seconds%60;document.getElementById('timer').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;if(seconds<=300)document.getElementById('timer').style.background='#fee2e2'}
+function submitQuiz(auto=false){clearInterval(timerId);let score=0,answered=0;const details=[];questions.forEach((q,i)=>{const el=document.querySelector(`input[name=q${i}]:checked`);const v=el?Number(el.value):null;if(v!==null)answered++;if(v===q.answer)score++;details.push({v,q,i});});
+ const result=document.getElementById('result');result.classList.remove('hidden');const pct=Math.round(score/questions.length*100);let msg=pct>=85?'非常棒！':pct>=70?'表現很好！':pct>=50?'不錯，繼續練習！':'先看解析，再挑戰一次！';
+ result.innerHTML=`<h2>${auto?'時間到，自動交卷':'完成！'}</h2><div class="score">${score} / ${questions.length}</div><p><b>${msg}</b>　作答 ${answered} 題，正確率 ${pct}%</p><h3>逐題解析</h3>`+details.map(d=>`<div class="explain ${d.v===d.q.answer?'right-card':'wrong-card'}" style="padding-left:12px"><div class="answerline">第 ${d.i+1} 題：${d.v===d.q.answer?'✅ 正確':'❌ 錯誤或未作答'}</div><div>正確答案：${String.fromCharCode(65+d.q.answer)}. ${d.q.choices[d.q.answer]}</div><div>${d.q.explain}</div><div class="sub">能力：${d.q.skill}</div></div>`).join('');
+ result.scrollIntoView({behavior:'smooth'});
+}
+document.getElementById('submitBtn').addEventListener('click',()=>submitQuiz(false));
+document.getElementById('resetBtn').addEventListener('click',()=>location.reload());
+renderTimer();
+</script>
+</body>
+</html>
